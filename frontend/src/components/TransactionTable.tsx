@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ArrowUpDown, Trash2, Search, ArrowUpRight, ArrowDownRight, Calendar, AlertCircle, Edit, Download, Printer, Repeat } from 'lucide-react';
+import { ArrowUpDown, Trash2, Search, Calendar, AlertCircle, Edit, Download, Printer, Repeat } from 'lucide-react';
 import { Transaction } from '../types';
 
 interface TransactionTableProps {
@@ -11,7 +11,6 @@ interface TransactionTableProps {
   isLoading: boolean;
   currencySymbol: string;
   currencyRate: number;
-  isLightMode?: boolean;
 }
 
 export const TransactionTable: React.FC<TransactionTableProps> = ({
@@ -20,8 +19,7 @@ export const TransactionTable: React.FC<TransactionTableProps> = ({
   onEditSelect,
   isLoading,
   currencySymbol,
-  currencyRate,
-  isLightMode = false
+  currencyRate
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');

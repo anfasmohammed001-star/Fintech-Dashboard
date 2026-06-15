@@ -50,8 +50,9 @@ export const BudgetTracker: React.FC<BudgetTrackerProps> = ({
       setAmount('');
       setCategory('');
       onUpdate();
-    } catch (err: any) {
-      setError(err.message || 'Failed to set budget');
+    } catch (err: unknown) {
+      const errMsg = err instanceof Error ? err.message : 'Failed to set budget';
+      setError(errMsg);
     } finally {
       setIsSubmitting(false);
     }
@@ -61,8 +62,9 @@ export const BudgetTracker: React.FC<BudgetTrackerProps> = ({
     try {
       await api.deleteBudget(id);
       onUpdate();
-    } catch (err: any) {
-      alert(err.message || 'Failed to delete budget');
+    } catch (err: unknown) {
+      const errMsg = err instanceof Error ? err.message : 'Failed to delete budget';
+      alert(errMsg);
     }
   };
 

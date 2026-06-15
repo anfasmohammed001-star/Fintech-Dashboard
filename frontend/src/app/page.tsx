@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { api, FilterParams } from '../services/api';
-import { Transaction, FinancialSummary, ChartDataPoint, FinancialInsight, User, Budget, Goal, CurrencyConfig, CurrencyCode } from '../types';
+import { Transaction, FinancialSummary, ChartDataPoint, FinancialInsight, User, Budget, Goal, CurrencyConfig } from '../types';
 import { SummaryCards } from '../components/SummaryCards';
 import { SpendingChart } from '../components/SpendingChart';
 import { InsightCard } from '../components/InsightCard';
@@ -12,7 +12,7 @@ import { TransactionTable } from '../components/TransactionTable';
 import { AuthScreen } from '../components/AuthScreen';
 import { BudgetTracker } from '../components/BudgetTracker';
 import { GoalsTracker } from '../components/GoalsTracker';
-import { Wallet, LogOut, Sun, Moon, DollarSign, CalendarRange, TrendingUp, BarChart3, PieChartIcon, AlertTriangle, RefreshCw } from 'lucide-react';
+import { Wallet, LogOut, Sun, Moon, CalendarRange, TrendingUp, BarChart3, PieChartIcon, AlertTriangle, RefreshCw } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 const CURRENCIES: CurrencyConfig[] = [
@@ -24,7 +24,20 @@ const CURRENCIES: CurrencyConfig[] = [
 
 export default function DashboardPage() {
   // Authentication State
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User | null>(() => {
+    if (typeof window !== 'undefined') {
+      const storedUser = localStorage.getItem('user');
+      const token = localStorage.getItem('token');
+      if (storedUser && token) {
+        try {
+          return JSON.parse(storedUser);
+        } catch {
+          return null;
+        }
+      }
+    }
+    return null;
+  });
   const [authChecked, setAuthChecked] = useState(false);
 
   // Theme state
@@ -65,21 +78,20 @@ export default function DashboardPage() {
 
   // Check login session on load
   useEffect(() => {
-    const storedUser = localStorage.getItem('user');
-    const token = localStorage.getItem('token');
-    if (storedUser && token) {
-      setUser(JSON.parse(storedUser));
-    }
-    
-    // Set default light mode class
+    const timer = setTimeout(() => {
+      setAuthChecked(true);
+    }, 0);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Sync theme
+  useEffect(() => {
     if (isLightMode) {
       document.documentElement.classList.add('light');
     } else {
       document.documentElement.classList.remove('light');
     }
-    
-    setAuthChecked(true);
-  }, []);
+  }, [isLightMode]);
 
   // Sync theme
   const toggleTheme = () => {
@@ -93,7 +105,7 @@ export default function DashboardPage() {
   };
 
   // Fetch all dashboard data
-  const fetchDashboardData = async (filterParams: FilterParams) => {
+  const fetchDashboardData = useCallback(async (filterParams: FilterParams) => {
     if (!user) return;
     setIsLoading(true);
     setError(null);
@@ -113,20 +125,23 @@ export default function DashboardPage() {
       setInsight(insightInfo);
       setBudgets(budgetList);
       setGoals(goalList);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
       setError('Could not connect to backend server. Re-trying...');
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [user]);
 
   // Refetch when filters or user changes
   useEffect(() => {
     if (user) {
-      fetchDashboardData(filters);
+      const timer = setTimeout(() => {
+        fetchDashboardData(filters);
+      }, 0);
+      return () => clearTimeout(timer);
     }
-  }, [filters, user]);
+  }, [filters, user, fetchDashboardData]);
 
   const handleAuthSuccess = (loggedInUser: User) => {
     setUser(loggedInUser);
@@ -152,8 +167,9 @@ export default function DashboardPage() {
         setEditTransaction(null);
       }
       fetchDashboardData(filters);
-    } catch (err: any) {
-      alert(err.message || 'Failed to delete transaction');
+    } catch (err: unknown) {
+      const errMsg = err instanceof Error ? err.message : 'Failed to delete transaction';
+      alert(errMsg);
     }
   };
 
@@ -205,7 +221,7 @@ export default function DashboardPage() {
         } else {
           monthlyTotals[monthStr].Expense += convertVal(t.amount);
         }
-      } catch (err) {}
+      } catch {}
     });
 
     return Object.values(monthlyTotals);
@@ -426,7 +442,6 @@ export default function DashboardPage() {
               isLoading={isLoading}
               currencySymbol={activeCurrency.symbol}
               currencyRate={activeCurrency.rate}
-              isLightMode={isLightMode}
             />
           </div>
 

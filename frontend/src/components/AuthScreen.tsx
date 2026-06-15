@@ -39,8 +39,9 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onSuccess, isLightMode =
       } else {
         throw new Error('Authentication succeeded but token was missing.');
       }
-    } catch (err: any) {
-      setError(err.message || 'Authentication failed. Please verify credentials.');
+    } catch (err: unknown) {
+      const errMsg = err instanceof Error ? err.message : 'Authentication failed. Please verify credentials.';
+      setError(errMsg);
     } finally {
       setIsLoading(false);
     }

@@ -55,8 +55,9 @@ export const GoalsTracker: React.FC<GoalsTrackerProps> = ({
       setTargetAmount('');
       setDeadline('');
       onUpdate();
-    } catch (err: any) {
-      setError(err.message || 'Failed to create savings goal');
+    } catch (err: unknown) {
+      const errMsg = err instanceof Error ? err.message : 'Failed to create savings goal';
+      setError(errMsg);
     } finally {
       setIsSubmitting(false);
     }
@@ -72,8 +73,9 @@ export const GoalsTracker: React.FC<GoalsTrackerProps> = ({
       setContribAmount('');
       setContribGoalId(null);
       onUpdate();
-    } catch (err: any) {
-      alert(err.message || 'Failed to add savings contribution');
+    } catch (err: unknown) {
+      const errMsg = err instanceof Error ? err.message : 'Failed to add savings contribution';
+      alert(errMsg);
     }
   };
 
@@ -81,8 +83,9 @@ export const GoalsTracker: React.FC<GoalsTrackerProps> = ({
     try {
       await api.deleteGoal(id);
       onUpdate();
-    } catch (err: any) {
-      alert(err.message || 'Failed to delete goal');
+    } catch (err: unknown) {
+      const errMsg = err instanceof Error ? err.message : 'Failed to delete goal';
+      alert(errMsg);
     }
   };
 

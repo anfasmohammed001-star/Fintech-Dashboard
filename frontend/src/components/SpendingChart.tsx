@@ -30,6 +30,32 @@ const LIGHT_COLORS = [
   '#3b82f6', // Blue
 ];
 
+interface CustomTooltipProps {
+  active?: boolean;
+  payload?: Array<{
+    payload: ChartDataPoint;
+  }>;
+  total: number;
+  formatCurrency: (val: number) => string;
+}
+
+const CustomTooltip: React.FC<CustomTooltipProps> = ({ active, payload, total, formatCurrency }) => {
+  if (active && payload && payload.length) {
+    const pData = payload[0].payload;
+    const percentage = total > 0 ? ((pData.amount / total) * 100).toFixed(1) : '0.0';
+    return (
+      <div className="glass-panel border border-card-border px-4 py-3 rounded-xl shadow-2xl">
+        <p className="text-sm font-semibold text-text-title">{pData.category}</p>
+        <div className="flex items-center gap-3 mt-1 text-xs">
+          <span className="text-primary font-bold">{formatCurrency(pData.amount)}</span>
+          <span className="text-text-muted">({percentage}%)</span>
+        </div>
+      </div>
+    );
+  }
+  return null;
+};
+
 export const SpendingChart: React.FC<SpendingChartProps> = ({ data, isLoading, isLightMode = false }) => {
   const hasData = data && data.length > 0;
   const total = data.reduce((sum, item) => sum + item.amount, 0);
@@ -38,23 +64,6 @@ export const SpendingChart: React.FC<SpendingChartProps> = ({ data, isLoading, i
 
   const formatCurrency = (val: number) => {
     return `₹${val.toLocaleString('en-IN')}`;
-  };
-
-  const CustomTooltip = ({ active, payload }: any) => {
-    if (active && payload && payload.length) {
-      const pData = payload[0].payload;
-      const percentage = total > 0 ? ((pData.amount / total) * 100).toFixed(1) : '0.0';
-      return (
-        <div className="glass-panel border border-card-border px-4 py-3 rounded-xl shadow-2xl">
-          <p className="text-sm font-semibold text-text-title">{pData.category}</p>
-          <div className="flex items-center gap-3 mt-1 text-xs">
-            <span className="text-primary font-bold">{formatCurrency(pData.amount)}</span>
-            <span className="text-text-muted">({percentage}%)</span>
-          </div>
-        </div>
-      );
-    }
-    return null;
   };
 
   return (
@@ -103,15 +112,15 @@ export const SpendingChart: React.FC<SpendingChartProps> = ({ data, isLoading, i
                     />
                   ))}
                 </Pie>
-                <Tooltip content={<CustomTooltip />} />
+                <Tooltip content={<CustomTooltip total={total} formatCurrency={formatCurrency} />} />
                 <Legend 
                   verticalAlign="bottom" 
                   height={36} 
                   iconType="circle"
                   iconSize={8}
-                  formatter={(value, entry: any) => {
+                  formatter={(value: string, entry: { payload?: { amount: number } }) => {
                     const payload = entry.payload;
-                    const percent = total > 0 ? ((payload.amount / total) * 100).toFixed(0) : '0';
+                    const percent = total > 0 && payload ? ((payload.amount / total) * 100).toFixed(0) : '0';
                     return <span className="text-xs text-text-title font-medium">{value} ({percent}%)</span>;
                   }}
                 />

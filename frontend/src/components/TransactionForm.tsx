@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { PlusCircle, RefreshCw, Calendar, Tag, FileText, CheckCircle2, Repeat, X } from 'lucide-react';
 import { Transaction } from '../types';
 import confetti from 'canvas-confetti';
@@ -14,6 +14,8 @@ interface TransactionFormProps {
   currencyRate: number;
 }
 
+const defaults = ['Food', 'Travel', 'Shopping', 'Bills', 'Salary', 'Freelance', 'Others'];
+
 export const TransactionForm: React.FC<TransactionFormProps> = ({
   onSuccess,
   availableCategories,
@@ -22,7 +24,6 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
   currencySymbol,
   currencyRate
 }) => {
-  const defaults = ['Food', 'Travel', 'Shopping', 'Bills', 'Salary', 'Freelance', 'Others'];
   const categoriesList = Array.from(new Set([...defaults, ...availableCategories])).sort();
 
   const getTodayDateString = () => {
@@ -47,39 +48,58 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [successMsg, setSuccessMsg] = useState('');
 
+  const handleReset = useCallback(() => {
+    setAmount('');
+    setCategory('');
+    setCustomCategory('');
+    setShowCustom(false);
+    setType('expense');
+    setDate(getTodayDateString());
+    setNote('');
+    setIsRecurring(false);
+    setRecurrenceInterval('none');
+    setErrors({});
+    setSuccessMsg('');
+  }, []);
+
   // Handle Edit state loading
   useEffect(() => {
-    if (editTransaction) {
-      // Amount in editTransaction is in INR. Convert to active currency
-      const displayAmount = (editTransaction.amount * currencyRate).toFixed(2);
-      setAmount(displayAmount);
-      
-      const isDefaultCategory = defaults.includes(editTransaction.category);
-      if (isDefaultCategory) {
-        setCategory(editTransaction.category);
-        setShowCustom(false);
+    const loadTransaction = () => {
+      if (editTransaction) {
+        // Amount in editTransaction is in INR. Convert to active currency
+        const displayAmount = (editTransaction.amount * currencyRate).toFixed(2);
+        setAmount(displayAmount);
+        
+        const isDefaultCategory = defaults.includes(editTransaction.category);
+        if (isDefaultCategory) {
+          setCategory(editTransaction.category);
+          setShowCustom(false);
+        } else {
+          setCustomCategory(editTransaction.category);
+          setShowCustom(true);
+        }
+        
+        setType(editTransaction.type);
+        
+        // Parse date: yyyy-mm-dd
+        const dateObj = new Date(editTransaction.date);
+        const yyyy = dateObj.getFullYear();
+        const mm = String(dateObj.getMonth() + 1).padStart(2, '0');
+        const dd = String(dateObj.getDate()).padStart(2, '0');
+        setDate(`${yyyy}-${mm}-${dd}`);
+        
+        setNote(editTransaction.note || '');
+        setIsRecurring(editTransaction.isRecurring || false);
+        setRecurrenceInterval(editTransaction.recurrenceInterval || 'none');
+        setErrors({});
       } else {
-        setCustomCategory(editTransaction.category);
-        setShowCustom(true);
+        handleReset();
       }
-      
-      setType(editTransaction.type);
-      
-      // Parse date: yyyy-mm-dd
-      const dateObj = new Date(editTransaction.date);
-      const yyyy = dateObj.getFullYear();
-      const mm = String(dateObj.getMonth() + 1).padStart(2, '0');
-      const dd = String(dateObj.getDate()).padStart(2, '0');
-      setDate(`${yyyy}-${mm}-${dd}`);
-      
-      setNote(editTransaction.note || '');
-      setIsRecurring(editTransaction.isRecurring || false);
-      setRecurrenceInterval(editTransaction.recurrenceInterval || 'none');
-      setErrors({});
-    } else {
-      handleReset();
-    }
-  }, [editTransaction]);
+    };
+
+    const timer = setTimeout(loadTransaction, 0);
+    return () => clearTimeout(timer);
+  }, [editTransaction, currencyRate, handleReset]);
 
   const validate = () => {
     const errs: Record<string, string> = {};
@@ -127,9 +147,10 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
     };
 
     try {
+      const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
       const url = editTransaction 
-        ? `http://localhost:5000/api/transactions/${editTransaction._id}` 
-        : 'http://localhost:5000/api/transactions';
+        ? `${baseUrl}/transactions/${editTransaction._id}` 
+        : `${baseUrl}/transactions`;
       const method = editTransaction ? 'PUT' : 'POST';
 
       const token = localStorage.getItem('token');
@@ -175,26 +196,15 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
       // Clear success message after 3 seconds
       setTimeout(() => setSuccessMsg(''), 3000);
 
-    } catch (err: any) {
-      setErrors({ server: err.message || 'Server error, failed to save.' });
+    } catch (err: unknown) {
+      const errMsg = err instanceof Error ? err.message : 'Server error, failed to save.';
+      setErrors({ server: errMsg });
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleReset = () => {
-    setAmount('');
-    setCategory('');
-    setCustomCategory('');
-    setShowCustom(false);
-    setType('expense');
-    setDate(getTodayDateString());
-    setNote('');
-    setIsRecurring(false);
-    setRecurrenceInterval('none');
-    setErrors({});
-    setSuccessMsg('');
-  };
+
 
   return (
     <div className="rounded-2xl glass-panel p-6 border border-card-border relative overflow-hidden shrink-0">
@@ -376,7 +386,12 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
             <div className="pl-6 animate-fade-in">
               <select
                 value={recurrenceInterval}
-                onChange={(e: any) => setRecurrenceInterval(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+                  const val = e.target.value;
+                  if (val === 'daily' || val === 'weekly' || val === 'monthly' || val === 'none') {
+                    setRecurrenceInterval(val);
+                  }
+                }}
                 className="w-full bg-[var(--input-bg)] border border-input-border rounded-xl px-3 py-2 text-xs text-text-title focus:outline-none focus:border-primary"
               >
                 <option value="daily">Daily recurrence</option>

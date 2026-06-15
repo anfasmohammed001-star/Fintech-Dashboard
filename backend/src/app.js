@@ -2,8 +2,12 @@ const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
 const transactionRoutes = require('./routes/transaction.routes');
+const { connectDB } = require('./config/db');
 
 const app = express();
+
+// Connect to Database
+connectDB();
 
 // Middlewares
 app.use(cors());
