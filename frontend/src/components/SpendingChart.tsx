@@ -118,9 +118,10 @@ export const SpendingChart: React.FC<SpendingChartProps> = ({ data, isLoading, i
                   height={36} 
                   iconType="circle"
                   iconSize={8}
-                  formatter={(value: string, entry: { payload?: { amount: number } }) => {
-                    const payload = entry.payload;
-                    const percent = total > 0 && payload ? ((payload.amount / total) * 100).toFixed(0) : '0';
+                  formatter={(value: string, entry: { payload?: object }) => {
+                    const payload = entry.payload as Record<string, unknown> | undefined;
+                    const amount = payload && typeof payload.amount === 'number' ? payload.amount : 0;
+                    const percent = total > 0 ? ((amount / total) * 100).toFixed(0) : '0';
                     return <span className="text-xs text-text-title font-medium">{value} ({percent}%)</span>;
                   }}
                 />

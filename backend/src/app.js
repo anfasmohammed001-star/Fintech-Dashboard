@@ -9,6 +9,17 @@ const app = express();
 // Connect to Database
 connectDB();
 
+// Strip Vercel Services route prefix if present
+app.use((req, res, next) => {
+  if (req.url.startsWith('/_/backend')) {
+    req.url = req.url.substring('/_/backend'.length);
+    if (req.url === '' || req.url.startsWith('?')) {
+      req.url = '/' + req.url;
+    }
+  }
+  next();
+});
+
 // Middlewares
 app.use(cors());
 app.use(express.json());

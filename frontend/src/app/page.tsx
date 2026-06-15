@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { api, FilterParams } from '../services/api';
 import { Transaction, FinancialSummary, ChartDataPoint, FinancialInsight, User, Budget, Goal, CurrencyConfig } from '../types';
 import { SummaryCards } from '../components/SummaryCards';
