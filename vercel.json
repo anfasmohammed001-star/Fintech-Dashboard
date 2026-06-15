@@ -6,7 +6,7 @@
             "framework": "nextjs"
         },
         "backend": {
-            "root": "backend",
+            "entrypoint": "backend/src/app.js",
             "routePrefix": "/_/backend"
         }
     }
