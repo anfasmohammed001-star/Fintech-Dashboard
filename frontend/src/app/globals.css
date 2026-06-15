@@ -1,16 +1,95 @@
 @import "tailwindcss";
 
+@theme {
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-income: var(--income);
+  --color-expense: var(--expense);
+  --color-card-bg: var(--card-bg);
+  --color-card-border: var(--card-border);
+  --color-input-bg: var(--input-bg);
+  --color-input-border: var(--input-border);
+  --color-text-title: var(--text-title);
+  --color-text-muted: var(--text-muted);
+  
+  --color-badge-bg: var(--badge-bg);
+  --color-btn-secondary: var(--btn-secondary-bg);
+  --color-btn-secondary-border: var(--btn-secondary-border);
+  --color-btn-secondary-hover: var(--btn-secondary-hover);
+  --color-toggle-bg: var(--toggle-bg);
+  --color-toggle-border: var(--toggle-border);
+  --color-table-header-bg: var(--table-header-bg);
+  --color-table-row-hover: var(--table-row-hover);
+  --color-progress-track: var(--progress-track-bg);
+}
+
 :root {
   --background: #020617; /* slate-950 */
   --foreground: #f8fafc; /* slate-50 */
   --font-sans: var(--font-outfit);
   --font-mono: var(--font-mono);
+
+  --primary: #6366f1; /* indigo-500 */
+  --primary-hover: #4f46e5; /* indigo-600 */
+  --income: #10b981; /* emerald-500 */
+  --expense: #f43f5e; /* rose-500 */
+
+  --card-bg: rgba(15, 23, 42, 0.45);
+  --card-border: rgba(255, 255, 255, 0.06);
+  --card-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+
+  --input-bg: rgba(15, 23, 42, 0.6);
+  --input-border: rgba(255, 255, 255, 0.1);
+
+  --text-title: #f8fafc; /* slate-50 */
+  --text-muted: #94a3b8; /* slate-400 */
+
+  --badge-bg: #0f172a; /* slate-900 */
+  --btn-secondary-bg: rgba(255, 255, 255, 0.05);
+  --btn-secondary-border: rgba(255, 255, 255, 0.1);
+  --btn-secondary-hover: rgba(255, 255, 255, 0.1);
+  
+  --toggle-bg: #0f172a;
+  --toggle-border: rgba(255, 255, 255, 0.05);
+  
+  --table-header-bg: rgba(15, 23, 42, 0.2);
+  --table-row-hover: rgba(255, 255, 255, 0.02);
+  
+  --progress-track-bg: #0f172a;
 }
 
 /* Light Theme Variables */
 html.light {
   --background: #f8fafc; /* slate-50 */
-  --foreground: #0f172a; /* slate-900 */
+  --foreground: #1e293b; /* slate-800 */
+
+  --primary: #1d4ed8; /* blue-700 */
+  --primary-hover: #1e40af; /* blue-800 */
+  --income: #1d9e75; /* Palette 1 Income */
+  --expense: #e24b4a; /* Palette 1 Expense */
+
+  --card-bg: #ffffff; /* Palette 1 Card */
+  --card-border: rgba(15, 23, 42, 0.08);
+  --card-shadow: 0 8px 32px 0 rgba(15, 23, 42, 0.04);
+
+  --input-bg: #ffffff;
+  --input-border: #cbd5e1; /* slate-300 */
+
+  --text-title: #1e293b; /* slate-800 */
+  --text-muted: #64748b; /* slate-500 */
+
+  --badge-bg: #f1f5f9; /* slate-100 */
+  --btn-secondary-bg: #f1f5f9;
+  --btn-secondary-border: #e2e8f0;
+  --btn-secondary-hover: #cbd5e1;
+  
+  --toggle-bg: #f1f5f9;
+  --toggle-border: #e2e8f0;
+  
+  --table-header-bg: rgba(241, 245, 249, 0.5);
+  --table-row-hover: #f8fafc;
+  
+  --progress-track-bg: #e2e8f0;
 }
 
 body {
@@ -20,24 +99,14 @@ body {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-html.light body {
-  background: #f1f5f9; /* slate-100 background */
-}
-
 /* Glassmorphism custom classes */
 .glass-panel {
-  background: rgba(15, 23, 42, 0.45);
+  background: var(--card-bg);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-  transition: border-color 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
-}
-
-html.light .glass-panel {
-  background: rgba(255, 255, 255, 0.65);
-  border-color: rgba(15, 23, 42, 0.08);
-  box-shadow: 0 8px 32px 0 rgba(15, 23, 42, 0.04);
+  border: 1px solid var(--card-border);
+  box-shadow: var(--card-shadow);
+  transition: border-color 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
 }
 
 .glass-panel-hover {
@@ -52,9 +121,9 @@ html.light .glass-panel {
 }
 
 html.light .glass-panel-hover:hover {
-  background: rgba(255, 255, 255, 0.85);
-  border-color: rgba(99, 102, 241, 0.35);
-  box-shadow: 0 12px 40px 0 rgba(99, 102, 241, 0.08);
+  background: #ffffff;
+  border-color: rgba(29, 78, 216, 0.35);
+  box-shadow: 0 12px 40px 0 rgba(29, 78, 216, 0.08);
 }
 
 /* Custom Scrollbars */

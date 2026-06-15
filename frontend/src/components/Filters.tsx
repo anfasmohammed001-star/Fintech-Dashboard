@@ -33,9 +33,9 @@ export const Filters: React.FC<FiltersProps> = ({ filters, onChange, availableCa
   const categoriesList = ['All', ...allCategories.sort()];
 
   return (
-    <div className="rounded-2xl glass-panel p-5 border border-white/5 flex flex-col md:flex-row md:items-center justify-between gap-4">
-      <div className="flex items-center gap-2 text-slate-300">
-        <Filter className="w-4 h-4 text-indigo-400" />
+    <div className="rounded-2xl glass-panel p-5 border border-card-border flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="flex items-center gap-2 text-text-title">
+        <Filter className="w-4 h-4 text-primary" />
         <span className="text-sm font-semibold">Filter Transactions</span>
       </div>
 
@@ -46,10 +46,10 @@ export const Filters: React.FC<FiltersProps> = ({ filters, onChange, availableCa
           <select
             value={filters.category || 'All'}
             onChange={handleCategoryChange}
-            className="w-full bg-slate-900/60 border border-white/10 rounded-xl pl-9 pr-4 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all appearance-none cursor-pointer"
+            className="w-full bg-[var(--input-bg)] border border-input-border rounded-xl pl-9 pr-4 py-2.5 text-sm text-text-title focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all appearance-none cursor-pointer"
           >
             {categoriesList.map(cat => (
-              <option key={cat} value={cat} className="bg-slate-950 text-slate-200">
+              <option key={cat} value={cat} className="bg-[var(--card-bg)] text-[var(--foreground)]">
                 {cat}
               </option>
             ))}
@@ -64,7 +64,7 @@ export const Filters: React.FC<FiltersProps> = ({ filters, onChange, availableCa
             placeholder="Start Date"
             value={filters.startDate || ''}
             onChange={handleStartDateChange}
-            className="w-full bg-slate-900/60 border border-white/10 rounded-xl pl-9 pr-4 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all cursor-pointer"
+            className="w-full bg-[var(--input-bg)] border border-input-border rounded-xl pl-9 pr-4 py-2.5 text-sm text-text-title focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all cursor-pointer"
           />
         </div>
 
@@ -76,14 +76,14 @@ export const Filters: React.FC<FiltersProps> = ({ filters, onChange, availableCa
             placeholder="End Date"
             value={filters.endDate || ''}
             onChange={handleEndDateChange}
-            className="w-full bg-slate-900/60 border border-white/10 rounded-xl pl-9 pr-4 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all cursor-pointer"
+            className="w-full bg-[var(--input-bg)] border border-input-border rounded-xl pl-9 pr-4 py-2.5 text-sm text-text-title focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all cursor-pointer"
           />
         </div>
       </div>
 
       <button
         onClick={handleReset}
-        className="flex items-center justify-center gap-2 px-4 py-2.5 text-xs font-semibold text-slate-300 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 hover:text-white transition-all cursor-pointer active:scale-95 shrink-0"
+        className="flex items-center justify-center gap-2 px-4 py-2.5 text-xs font-semibold text-text-title bg-btn-secondary border border-btn-secondary-border hover:bg-btn-secondary-hover transition-all cursor-pointer active:scale-95 shrink-0"
       >
         <RotateCcw className="w-3.5 h-3.5" />
         Reset Filters

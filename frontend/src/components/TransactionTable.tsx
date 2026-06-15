@@ -11,6 +11,7 @@ interface TransactionTableProps {
   isLoading: boolean;
   currencySymbol: string;
   currencyRate: number;
+  isLightMode?: boolean;
 }
 
 export const TransactionTable: React.FC<TransactionTableProps> = ({
@@ -19,7 +20,8 @@ export const TransactionTable: React.FC<TransactionTableProps> = ({
   onEditSelect,
   isLoading,
   currencySymbol,
-  currencyRate
+  currencyRate,
+  isLightMode = false
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
@@ -110,12 +112,12 @@ export const TransactionTable: React.FC<TransactionTableProps> = ({
   };
 
   return (
-    <div className="rounded-2xl glass-panel border border-white/5 overflow-hidden flex flex-col h-[520px] print-table-container">
+    <div className="rounded-2xl glass-panel border border-card-border overflow-hidden flex flex-col h-[520px] print-table-container">
       {/* Header and Search */}
-      <div className="p-5 border-b border-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shrink-0 print:hidden">
+      <div className="p-5 border-b border-card-border flex flex-col sm:flex-row sm:items-center justify-between gap-4 shrink-0 print:hidden">
         <div>
-          <h3 className="text-base font-semibold text-slate-200">Transaction History</h3>
-          <p className="text-xs text-slate-400 mt-0.5">
+          <h3 className="text-base font-semibold text-text-title">Transaction History</h3>
+          <p className="text-xs text-text-muted mt-0.5">
             Showing {sorted.length} {sorted.length === 1 ? 'transaction' : 'transactions'}
           </p>
         </div>
@@ -128,14 +130,14 @@ export const TransactionTable: React.FC<TransactionTableProps> = ({
               placeholder="Search details..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full bg-slate-900/60 border border-white/10 rounded-xl pl-9 pr-4 py-2 text-xs text-slate-200 placeholder-slate-600 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all"
+              className="w-full bg-[var(--input-bg)] border border-input-border rounded-xl pl-9 pr-4 py-2 text-xs text-text-title placeholder-slate-600 dark:placeholder-slate-600/50 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
             />
           </div>
 
           <button
             onClick={handleExportCSV}
             disabled={sorted.length === 0}
-            className="flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold text-slate-300 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-all cursor-pointer disabled:opacity-40"
+            className="flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold text-text-title bg-btn-secondary border border-btn-secondary-border hover:bg-btn-secondary-hover transition-all cursor-pointer disabled:opacity-40"
             title="Export to CSV"
           >
             <Download className="w-3.5 h-3.5" />
@@ -145,7 +147,7 @@ export const TransactionTable: React.FC<TransactionTableProps> = ({
           <button
             onClick={handlePrintPDF}
             disabled={sorted.length === 0}
-            className="flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold text-slate-300 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-all cursor-pointer disabled:opacity-40"
+            className="flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold text-text-title bg-btn-secondary border border-btn-secondary-border hover:bg-btn-secondary-hover transition-all cursor-pointer disabled:opacity-40"
             title="Export Report PDF"
           >
             <Printer className="w-3.5 h-3.5" />
@@ -164,26 +166,26 @@ export const TransactionTable: React.FC<TransactionTableProps> = ({
       <div className="flex-1 min-h-0 overflow-y-auto print:overflow-visible">
         {isLoading ? (
           <div className="flex flex-col items-center justify-center h-full gap-2">
-            <div className="w-8 h-8 rounded-full border-2 border-indigo-500/20 border-t-indigo-500 animate-spin" />
-            <span className="text-xs text-slate-400">Loading ledger logs...</span>
+            <div className="w-8 h-8 rounded-full border-2 border-primary/20 border-t-primary animate-spin" />
+            <span className="text-xs text-text-muted">Loading ledger logs...</span>
           </div>
         ) : sorted.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full py-10 text-center">
             <AlertCircle className="w-8 h-8 text-slate-600 mb-2" />
-            <p className="text-sm text-slate-400">No transactions recorded.</p>
-            <p className="text-xs text-slate-500 mt-1">Start by logging a transaction or reset filters.</p>
+            <p className="text-sm text-text-muted">No transactions recorded.</p>
+            <p className="text-xs text-text-muted/65 mt-1">Start by logging a transaction or reset filters.</p>
           </div>
         ) : (
-          <table className="w-full text-left border-collapse text-slate-300 print:text-slate-900">
-            <thead className="text-[10px] font-semibold text-slate-400 bg-slate-900/20 sticky top-0 backdrop-blur-md border-b border-white/5 z-10 print:bg-slate-100 print:text-slate-700 print:border-slate-300">
+          <table className="w-full text-left border-collapse text-text-title print:text-slate-900">
+            <thead className="text-[10px] font-semibold text-text-muted bg-table-header-bg sticky top-0 backdrop-blur-md border-b border-card-border z-10 print:bg-slate-100 print:text-slate-700 print:border-slate-300">
               <tr>
                 <th className="py-4 px-5">
                   <button
                     onClick={handleSort}
-                    className="flex items-center gap-1.5 hover:text-white transition-all cursor-pointer font-semibold uppercase tracking-wider text-[10px] print:pointer-events-none print:hover:text-slate-700"
+                    className="flex items-center gap-1.5 hover:text-text-title transition-all cursor-pointer font-semibold uppercase tracking-wider text-[10px] print:pointer-events-none print:hover:text-slate-700"
                   >
                     Date
-                    <ArrowUpDown className="w-3.5 h-3.5 text-indigo-400 print:hidden" />
+                    <ArrowUpDown className="w-3.5 h-3.5 text-primary print:hidden" />
                   </button>
                 </th>
                 <th className="py-4 px-5 uppercase tracking-wider">Category</th>
@@ -193,7 +195,7 @@ export const TransactionTable: React.FC<TransactionTableProps> = ({
                 <th className="py-4 px-5 text-center uppercase tracking-wider w-24 print:hidden">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/5 text-sm print:divide-slate-200">
+            <tbody className="divide-y divide-card-border text-sm print:divide-slate-200">
               {sorted.map((t) => {
                 const isExpense = t.type === 'expense';
                 const isConfirming = deletingId === t._id;
@@ -201,12 +203,12 @@ export const TransactionTable: React.FC<TransactionTableProps> = ({
                 return (
                   <tr
                     key={t._id}
-                    className={`hover:bg-white/2 transition-colors duration-150 print:hover:bg-transparent ${
+                    className={`hover:bg-table-row-hover transition-colors duration-150 print:hover:bg-transparent ${
                       isConfirming ? 'bg-rose-500/5' : ''
                     }`}
                   >
                     {/* Date */}
-                    <td className="py-4 px-5 whitespace-nowrap font-medium text-slate-300 print:text-slate-800">
+                    <td className="py-4 px-5 whitespace-nowrap font-medium text-text-title print:text-slate-800">
                       <div className="flex items-center gap-2">
                         <Calendar className="w-3.5 h-3.5 text-slate-500 shrink-0 print:hidden" />
                         {formatDate(t.date)}
@@ -215,7 +217,7 @@ export const TransactionTable: React.FC<TransactionTableProps> = ({
 
                     {/* Category */}
                     <td className="py-4 px-5 whitespace-nowrap">
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-900 border border-white/5 text-slate-300 print:bg-slate-100 print:border-slate-300 print:text-slate-800">
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-badge-bg border border-card-border text-text-title print:bg-slate-100 print:border-slate-300 print:text-slate-800">
                         {t.category}
                       </span>
                     </td>
@@ -225,8 +227,8 @@ export const TransactionTable: React.FC<TransactionTableProps> = ({
                       <span
                         className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold border ${
                           isExpense
-                            ? 'bg-rose-500/10 border-rose-500/20 text-rose-400 print:bg-transparent print:border-rose-300 print:text-rose-700'
-                            : 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400 print:bg-transparent print:border-emerald-300 print:text-emerald-700'
+                            ? 'bg-expense/10 border-expense/20 text-expense print:bg-transparent print:border-rose-300 print:text-rose-700'
+                            : 'bg-income/10 border-income/20 text-income print:bg-transparent print:border-emerald-300 print:text-emerald-700'
                         }`}
                       >
                         {isExpense ? 'Expense' : 'Income'}
@@ -241,14 +243,14 @@ export const TransactionTable: React.FC<TransactionTableProps> = ({
 
                     {/* Amount */}
                     <td className={`py-4 px-5 whitespace-nowrap text-right font-bold tabular-nums ${
-                      isExpense ? 'text-rose-400 print:text-rose-700' : 'text-emerald-400 print:text-emerald-700'
+                      isExpense ? 'text-expense print:text-rose-700' : 'text-income print:text-emerald-700'
                     }`}>
                       {isExpense ? '-' : '+'}{formatCurrency(convertVal(t.amount))}
                     </td>
 
                     {/* Note */}
-                    <td className="py-4 px-5 text-slate-400 print:text-slate-600 max-w-xs truncate" title={t.note}>
-                      {t.note || <span className="text-slate-600 italic text-xs print:text-slate-400">No note</span>}
+                    <td className="py-4 px-5 text-text-muted print:text-slate-600 max-w-xs truncate" title={t.note}>
+                      {t.note || <span className="text-text-muted/65 italic text-xs print:text-slate-400">No note</span>}
                     </td>
 
                     {/* Actions */}
@@ -257,13 +259,13 @@ export const TransactionTable: React.FC<TransactionTableProps> = ({
                         <div className="flex items-center justify-center gap-2">
                           <button
                             onClick={() => handleConfirmDelete(t._id)}
-                            className="px-2 py-0.5 bg-rose-600 hover:bg-rose-500 text-white rounded text-[10px] font-bold cursor-pointer transition-all"
+                            className="px-2 py-0.5 bg-expense hover:bg-expense/90 text-white rounded text-[10px] font-bold cursor-pointer transition-all"
                           >
                             Delete
                           </button>
                           <button
                             onClick={() => setDeletingId(null)}
-                            className="px-2 py-0.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded text-[10px] font-medium cursor-pointer transition-all"
+                            className="px-2 py-0.5 bg-btn-secondary text-text-title border border-btn-secondary-border rounded text-[10px] font-medium cursor-pointer transition-all"
                           >
                             Cancel
                           </button>
@@ -272,14 +274,14 @@ export const TransactionTable: React.FC<TransactionTableProps> = ({
                         <div className="flex items-center justify-center gap-1.5">
                           <button
                             onClick={() => onEditSelect(t)}
-                            className="p-1.5 hover:bg-white/5 hover:text-slate-200 border border-transparent rounded-lg text-slate-500 cursor-pointer transition-all animate-fade-in"
+                            className="p-1.5 hover:bg-btn-secondary hover:text-text-title border border-transparent rounded-lg text-text-muted cursor-pointer transition-all animate-fade-in"
                             title="Edit transaction"
                           >
                             <Edit className="w-3.5 h-3.5" />
                           </button>
                           <button
                             onClick={() => handleDeleteClick(t._id)}
-                            className="p-1.5 hover:bg-rose-500/10 hover:text-rose-400 border border-transparent rounded-lg text-slate-500 cursor-pointer transition-all"
+                            className="p-1.5 hover:bg-expense/10 hover:text-expense border border-transparent rounded-lg text-text-muted cursor-pointer transition-all"
                             title="Delete transaction"
                           >
                             <Trash2 className="w-3.5 h-3.5" />

@@ -74,10 +74,10 @@ export const BudgetTracker: React.FC<BudgetTrackerProps> = ({
     });
 
   return (
-    <div className="rounded-2xl glass-panel p-6 border border-white/5 flex flex-col h-[280px] justify-between">
+    <div className="rounded-2xl glass-panel p-6 border border-card-border flex flex-col h-[280px] justify-between">
       <div className="min-h-0 flex flex-col h-full">
-        <h3 className="text-sm font-semibold text-slate-200 mb-3 flex items-center gap-2 shrink-0">
-          <Target className="w-4.5 h-4.5 text-indigo-400" />
+        <h3 className="text-sm font-semibold text-text-title mb-3 flex items-center gap-2 shrink-0">
+          <Target className="w-4.5 h-4.5 text-primary" />
           Category Budgets
         </h3>
 
@@ -86,11 +86,11 @@ export const BudgetTracker: React.FC<BudgetTrackerProps> = ({
           <select
             value={category}
             onChange={(e) => setCategory(e.target.value)}
-            className="flex-1 bg-slate-900/60 border border-white/10 rounded-xl px-2.5 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-indigo-500"
+            className="flex-1 bg-[var(--input-bg)] border border-input-border rounded-xl px-2.5 py-1.5 text-xs text-text-title focus:outline-none focus:border-primary"
           >
             <option value="" disabled>Category...</option>
             {defaults.map((cat) => (
-              <option key={cat} value={cat} className="bg-slate-950">
+              <option key={cat} value={cat} className="bg-[var(--card-bg)] text-[var(--foreground)]">
                 {cat}
               </option>
             ))}
@@ -100,25 +100,25 @@ export const BudgetTracker: React.FC<BudgetTrackerProps> = ({
             placeholder={`Limit (${currencySymbol})`}
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
-            className="w-24 bg-slate-900/60 border border-white/10 rounded-xl px-2.5 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-indigo-500"
+            className="w-24 bg-[var(--input-bg)] border border-input-border rounded-xl px-2.5 py-1.5 text-xs text-text-title focus:outline-none focus:border-primary"
           />
           <button
             type="submit"
             disabled={isSubmitting}
-            className="p-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl transition-all cursor-pointer flex items-center justify-center shrink-0 active:scale-95 disabled:opacity-50"
+            className="p-1.5 bg-primary hover:bg-primary-hover text-white rounded-xl transition-all cursor-pointer flex items-center justify-center shrink-0 active:scale-95 disabled:opacity-50"
           >
             <Plus className="w-4 h-4" />
           </button>
         </form>
 
-        {error && <p className="text-[10px] text-rose-400 font-medium mb-2 shrink-0">{error}</p>}
+        {error && <p className="text-[10px] text-expense font-medium mb-2 shrink-0">{error}</p>}
 
         {/* Budgets List */}
         <div className="flex-1 overflow-y-auto space-y-3.5 pr-1">
           {budgets.length === 0 ? (
             <div className="text-center py-5">
-              <Coins className="w-5 h-5 text-slate-600 mx-auto mb-1" />
-              <p className="text-[11px] text-slate-400">No category limits set.</p>
+              <Coins className="w-5 h-5 text-text-muted mx-auto mb-1" />
+              <p className="text-[11px] text-text-muted">No category limits set.</p>
             </div>
           ) : (
             budgets.map((b) => {
@@ -126,9 +126,9 @@ export const BudgetTracker: React.FC<BudgetTrackerProps> = ({
               const limitInr = b.amount;
               const percentage = limitInr > 0 ? (actualInr / limitInr) * 100 : 0;
               
-              let barColor = 'bg-indigo-500';
+              let barColor = 'bg-primary';
               if (percentage >= 100) {
-                barColor = 'bg-rose-500';
+                barColor = 'bg-expense';
               } else if (percentage >= 80) {
                 barColor = 'bg-amber-500';
               }
@@ -137,25 +137,25 @@ export const BudgetTracker: React.FC<BudgetTrackerProps> = ({
                 <div key={b._id} className="space-y-1 group">
                   <div className="flex justify-between items-center text-xs">
                     <div className="flex items-center gap-1">
-                      <span className="text-slate-300 font-medium">{b.category}</span>
+                      <span className="text-text-title font-medium">{b.category}</span>
                       {percentage >= 100 && (
-                        <span title="Exceeded!"><ShieldAlert className="w-3.5 h-3.5 text-rose-400 shrink-0" /></span>
+                        <span title="Exceeded!"><ShieldAlert className="w-3.5 h-3.5 text-expense shrink-0" /></span>
                       )}
                     </div>
                     <div className="flex items-center gap-1.5">
-                      <span className="text-slate-400 text-[10px]">
-                        {formatCurrency(convertVal(actualInr))} / <span className="text-slate-300 font-semibold">{formatCurrency(convertVal(limitInr))}</span>
+                      <span className="text-text-muted text-[10px]">
+                        {formatCurrency(convertVal(actualInr))} / <span className="text-text-title font-semibold">{formatCurrency(convertVal(limitInr))}</span>
                       </span>
                       <button
                         onClick={() => handleDeleteBudget(b._id)}
-                        className="opacity-0 group-hover:opacity-100 p-0.5 hover:bg-rose-500/10 hover:text-rose-400 rounded transition-all cursor-pointer"
+                        className="opacity-0 group-hover:opacity-100 p-0.5 hover:bg-expense/10 hover:text-expense text-text-muted rounded transition-all cursor-pointer"
                       >
                         <Trash2 className="w-3 h-3" />
                       </button>
                     </div>
                   </div>
 
-                  <div className="w-full bg-slate-900 rounded-full h-1.5 overflow-hidden border border-white/5">
+                  <div className="w-full bg-progress-track rounded-full h-1.5 overflow-hidden border border-card-border">
                     <div
                       className={`h-full rounded-full transition-all duration-500 ${barColor}`}
                       style={{ width: `${Math.min(percentage, 100)}%` }}
